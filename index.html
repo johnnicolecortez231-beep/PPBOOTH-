@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>RetroCam ✿</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+
+background:linear-gradient(135deg,#ffd6e8,#d7f4ff);
+
+font-family:Nunito,sans-serif;
+
+height:100vh;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+overflow:hidden;
+
+}
+
+.card{
+
+width:min(430px,95vw);
+
+background:white;
+
+border-radius:25px;
+
+padding:20px;
+
+box-shadow:0 15px 35px rgba(0,0,0,.18);
+
+}
+
+h1{
+
+font-family:"Press Start 2P";
+
+font-size:18px;
+
+text-align:center;
+
+margin-bottom:18px;
+
+color:#ff5b95;
+
+}
+
+.camera{
+
+position:relative;
+
+overflow:hidden;
+
+border-radius:18px;
+
+background:black;
+
+}
+
+video{
+
+width:100%;
+
+display:block;
+
+}
+
+canvas{
+
+display:none;
+
+}
+
+#photo{
+
+display:none;
+
+width:100%;
+
+border-radius:18px;
+
+}
+
+.overlay{
+
+position:absolute;
+
+top:0;
+
+left:0;
+
+width:100%;
+
+height:100%;
+
+pointer-events:none;
+
+}
+
+.timestamp{
+
+position:absolute;
+
+bottom:12px;
+
+right:12px;
+
+font-size:12px;
+
+color:#fff;
+
+text-shadow:2px 2px black;
+
+font-family:monospace;
+
+}
+
+.battery{
+
+position:absolute;
+
+top:12px;
+
+right:12px;
+
+color:white;
+
+font-size:12px;
+
+}
+
+.controls{
+
+display:grid;
+
+grid-template-columns:repeat(2,1fr);
+
+gap:10px;
+
+margin-top:15px;
+
+}
+
+button{
+
+padding:14px;
+
+border:none;
+
+border-radius:15px;
+
+font-size:15px;
+
+cursor:pointer;
+
+font-weight:bold;
+
+transition:.25s;
+
+}
+
+button:hover{
+
+transform:scale(1.05);
+
+}
+
+.capture{
+
+background:#ff7aa9;
+
+color:white;
+
+}
+
+.switch{
+
+background:#88d8ff;
+
+}
+
+.download{
+
+background:#89f7a1;
+
+}
+
+.filter{
+
+background:#ffe07a;
+
+}
+
+select{
+
+width:100%;
+
+padding:12px;
+
+border-radius:12px;
+
+margin-top:15px;
+
+font-size:15px;
+
+border:none;
+
+background:#f7f7f7;
+
+}
+
+.footer{
+
+text-align:center;
+
+margin-top:15px;
+
+color:#888;
+
+font-size:13px;
+
+}
+
+.flash{
+
+position:absolute;
+
+top:0;
+
+left:0;
+
+width:100%;
+
+height:100%;
+
+background:white;
+
+opacity:0;
+
+pointer-events:none;
+
+}
+
+.flash.show{
+
+animation:flash .4s;
+
+}
+
+@keyframes flash{
+
+0%{opacity:1;}
+
+100%{opacity:0;}
+
+}
+
+.retro-frame{
+
+position:absolute;
+
+inset:0;
+
+border:10px solid rgba(255,255,255,.15);
+
+border-radius:18px;
+
+pointer-events:none;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="card">
+
+<h1>📸 RetroCam ✿</h1>
+
+<div class="camera">
+
+<video id="video" autoplay playsinline></video>
+
+<img id="photo">
+
+<canvas id="canvas"></canvas>
+
+<div class="flash" id="flash"></div>
+
+<div class="retro-frame"></div>
+
+<div class="overlay">
+
+<div class="battery">
+🔋100%
+</div>
+
+<div class="timestamp" id="time"></div>
+
+</div>
+
+</div>
+
+<select id="filter">
+
+<option value="none">Original</option>
+
+<option value="sepia(1)">Sepia</option>
+
+<option value="grayscale(1)">Black & White</option>
+
+<option value="contrast(1.4) saturate(1.2)">Vintage</option>
+
+<option value="brightness(1.2) saturate(2)">Dreamy</option>
+
+<option value="hue-rotate(180deg)">Cyber Blue</option>
+
+<option value="contrast(1.6) sepia(.5)">Film</option>
+
+<option value="invert(.1) saturate(2)">Retro Pop</option>
+
+<option value="blur(1px) brightness(1.1)">Soft</option>
+
+<option value="contrast(2)">High Contrast</option>
+
+<option value="saturate(3)">VHS</option>
+
+</select>
+
+<div class="controls">
+
+<button class="capture" id="capture">
+📸 Capture
+</button>
+
+<button class="switch" id="switch">
+🔄 Switch
+</button>
+
+<button class="download" id="download">
+💾 Download
+</button>
+
+<button class="filter" id="liveFilter">
+🎨 Live Filter
+</button>
+
+</div>
+
+<div class="footer">
+Made with ❤️ RetroCam
+</div>
+
+</div>
+
+<script>
+
+const video=document.getElementById("video");
+
+const canvas=document.getElementById("canvas");
+
+const photo=document.getElementById("photo");
+
+const capture=document.getElementById("capture");
+
+const download=document.getElementById("download");
+
+const filter=document.getElementById("filter");
+
+const flash=document.getElementById("flash");
+
+const switchBtn=document.getElementById("switch");
+
+const liveBtn=document.getElementById("liveFilter");
+
+const ctx=canvas.getContext("2d");
+
+let facing="environment";
+
+let stream;
+
+async function startCamera(){
+
+if(stream){
+
+stream.getTracks().forEach(track=>track.stop());
+
+}
+
+stream=await navigator.mediaDevices.getUserMedia({
+
+video:{
+facingMode:facing
+},
+audio:false
+
+});
+
+video.srcObject=stream;
+
+}
+
+startCamera();
+switchBtn.onclick = async () => {
+
+    facing = facing === "environment" ? "user" : "environment";
+
+    await startCamera();
+
+};
+
+setInterval(() => {
+
+    const now = new Date();
+
+    document.getElementById("time").textContent =
+        now.toLocaleDateString() + " " +
+        now.toLocaleTimeString();
+
+},1000);
+
+filter.onchange = () => {
+
+    video.style.filter = filter.value;
+
+};
+
+liveBtn.onclick = () => {
+
+    video.style.filter = filter.value;
+
+};
+
+capture.onclick = () => {
+
+    flash.classList.add("show");
+
+    setTimeout(()=>flash.classList.remove("show"),400);
+
+    canvas.width = video.videoWidth;
+
+    canvas.height = video.videoHeight;
+
+    ctx.filter = filter.value;
+
+    ctx.drawImage(video,0,0);
+
+    photo.src = canvas.toDataURL("image/png");
+
+    photo.style.display="block";
+
+};
+
+download.onclick = () => {
+
+    canvas.width = video.videoWidth;
+
+    canvas.height = video.videoHeight;
+
+    ctx.filter = filter.value;
+
+    ctx.drawImage(video,0,0);
+
+    const link = document.createElement("a");
+
+    link.download = "RetroCam_" + Date.now() + ".png";
+
+    link.href = canvas.toDataURL("image/png");
+
+    link.click();
+
+};
+
+</script>
+
+</body>
+</html>
