@@ -388,3 +388,6 @@ video.addEventListener("wheel",(e)=>{
     video.style.transform = `scale(${scale})`;
 
 });
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("service-worker.js");
+}
