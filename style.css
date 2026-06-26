@@ -1,0 +1,214 @@
+:root{
+    --bg:#ffe8f3;
+    --card:#ffffffcc;
+    --accent:#ff6aa9;
+    --blue:#7ad8ff;
+    --yellow:#ffd86b;
+    --text:#2d2d2d;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:linear-gradient(135deg,#ffd6eb,#d7f3ff);
+    font-family:Poppins,sans-serif;
+    color:var(--text);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    overflow:hidden;
+}
+
+.camera-app{
+    width:min(430px,100vw);
+    height:100vh;
+    background:rgba(255,255,255,.65);
+    backdrop-filter:blur(18px);
+    display:flex;
+    flex-direction:column;
+}
+
+header{
+    padding:18px;
+    text-align:center;
+}
+
+header h1{
+    font-family:"Press Start 2P";
+    font-size:15px;
+    color:var(--accent);
+    margin-top:10px;
+}
+
+.status{
+    display:flex;
+    justify-content:space-between;
+    font-size:13px;
+    font-weight:bold;
+}
+
+#live{
+    color:red;
+    animation:blink 1s infinite;
+}
+
+@keyframes blink{
+    50%{opacity:.3;}
+}
+
+.camera-container{
+    position:relative;
+    flex:1;
+    overflow:hidden;
+    background:black;
+}
+
+video{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    transition:.3s;
+}
+
+canvas{
+    display:none;
+}
+
+#frameOverlay{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    pointer-events:none;
+}
+
+#flash{
+    position:absolute;
+    inset:0;
+    background:white;
+    opacity:0;
+}
+
+.flash{
+    animation:flash .35s;
+}
+
+@keyframes flash{
+    0%{opacity:1;}
+    100%{opacity:0;}
+}
+
+#timestamp{
+    position:absolute;
+    bottom:12px;
+    right:12px;
+    color:white;
+    font-size:13px;
+    text-shadow:2px 2px 3px black;
+}
+
+.toolbar{
+    display:flex;
+    justify-content:space-evenly;
+    padding:18px;
+}
+
+.toolbar button{
+
+    width:65px;
+    height:65px;
+
+    border:none;
+
+    border-radius:50%;
+
+    font-size:25px;
+
+    background:white;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+    box-shadow:0 8px 18px rgba(0,0,0,.15);
+
+}
+
+.toolbar button:hover{
+
+    transform:scale(1.1);
+
+}
+
+#capture{
+
+    width:82px;
+    height:82px;
+
+    background:var(--accent);
+
+    color:white;
+
+    font-size:34px;
+
+    border:6px solid white;
+
+}
+
+.filters{
+
+    display:flex;
+
+    overflow-x:auto;
+
+    gap:10px;
+
+    padding:15px;
+
+    background:white;
+
+}
+
+.filters button{
+
+    border:none;
+
+    border-radius:30px;
+
+    padding:10px 16px;
+
+    background:var(--yellow);
+
+    cursor:pointer;
+
+    white-space:nowrap;
+
+}
+
+.filters button:hover{
+
+    background:var(--blue);
+
+}
+
+::-webkit-scrollbar{
+
+    display:none;
+
+}
+
+@media(max-width:500px){
+
+header h1{
+
+font-size:12px;
+
+}
+
+}
